@@ -1,12 +1,13 @@
 import React from "react";
+import './index.css';
 
 const App = () => {
     return(
-        <>
-            <h1 className="w-screen h-screen flex justify-center item-center text-blue-600">
+        <div className="w-screen h-screen flex justify-center items-center text-blue-600">
+            <h1>
                 Hello Restaurant App
             </h1>
-        </>
+        </div>
     )
 }
 
