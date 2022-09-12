@@ -1,18 +1,39 @@
 import React from "react";
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
+//Router
+import { Link } from "react-router-dom";
 //React Icons
 import { MdShoppingBasket } from "react-icons/md";
+//Framer Motion
+import  { motion } from "framer-motion";
+// Firebase Signin with Popups
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { app } from "../firebase.config.js";
+// Hooks Context API and Redux
+import { useStateValue } from "../context/stateProvider";
+import { actionType } from "../context/reducer";
 
 const Header = () => {
+    const firebaseAuth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const [{ user }, dispatch] = useStateValue();
+    const login = async () => {
+       const {user: {refreshToken, providerData}} = await signInWithPopup(firebaseAuth, provider);
+       dispatch({
+        type: actionType.SET_USER,
+        user: providerData[0]
+       }); 
+    }
+
     return(
         <header className="fixed z-50 w-screen p-6 px-16">
             {/* desktop & tablet */}
             <div className="hidden md:flex w-full h-full items-center justify-between">
-                <div className="flex items center gap-2">
+                <Link to={"/"} className="flex items center gap-2">
                     <img src={Logo} className="w-20 object-cover cursor-pointer" alt="logo"/>
                     <p className="text-cartNumBg text-xl font-bold mt-4">RestauApp</p>
-                </div>
+                </Link>
 
                 <div className="flex items-center gap-8">
                     <ul className="flex items-center gap-8">
@@ -28,7 +49,15 @@ const Header = () => {
                             <p className="text-xs text-white font-semibold">2</p>
                         </div>
                     </div>
-                    <img className="w-10 min-w-[30px] h-10 min-h-[40px] cursor-pointer drop-shadow-2xl" src={Avatar} alt="userprofile" />
+                    <div className="relative">
+                        <motion.img 
+                            whileTap={{ scale: 0.6 }} 
+                            className="w-10 min-w-[30px] h-10 min-h-[40px] cursor-pointer drop-shadow-2xl" 
+                            src={Avatar} alt="userprofile" 
+                            onClick={ login }
+                        />
+                    </div>
+                   
                 </div>
             </div>
 
