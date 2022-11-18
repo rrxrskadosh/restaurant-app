@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { MdAttachMoney, MdCloudUpload, MdDelete, MdFastfood, MdFoodBank } from "react-icons/md";
 import { categories } from "../utils/data";
+import { getAllFoodItems } from "../utils/firebaseFunctions";
 import { storage } from "../firebase.config";
 import Loader from "./Loader";
 
@@ -9,6 +10,8 @@ import Loader from "./Loader";
 import { deleteObject, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 //Imported firebase Functions
 import { saveItem } from "../utils/firebaseFunctions";
+import { actionType } from "../context/reducer";
+import { useStateValue } from "../context/stateProvider";
 
 const CreateContainer = () => {
     const [title, setTitle] = useState("");
@@ -20,6 +23,7 @@ const CreateContainer = () => {
     const [alertStatus, setAlertStatus] = useState("danger");
     const [msg, setMsg] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [{ foodItems }, dispatch] = useStateValue();
 
     //Methods Functionalities Images and Save Details
 
@@ -110,6 +114,7 @@ const CreateContainer = () => {
                 setIsLoading(false);
             }, 4000);
         };
+        fetchData();
     };
 
     const clearData = () => {
@@ -119,6 +124,15 @@ const CreateContainer = () => {
         setPrice("");
         setTitle("Select Calories");
     }
+
+    const fetchData = async () => {
+        await getAllFoodItems().then(data => {
+            dispatch({
+                type: actionType.SET_FOOD_ITEMS,
+                foodItems: data,
+            });
+        });
+    };
 
     return(
         <div className="w-full min-h-screen flex items-center justify-center">
